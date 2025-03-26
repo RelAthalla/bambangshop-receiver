@@ -85,5 +85,12 @@ This is the place for you to write reflections:
 ### Mandatory (Subscriber) Reflections
 
 #### Reflection Subscriber-1
+1. **why we do not use Mutex<>?**
+    In this tutorial, we use an RwLock<Vec<Notification>> to synchronize access to the notifications list. This is necessary because the web server can handle multiple HTTP requests concurrently, and these requests might read from or write to the global notifications list at the same time. By using an RwLock, we allow multiple threads to obtain a shared read lock simultaneously, which improves performance when many threads are reading. Writes, however, still require an exclusive lock.
+
+    We do not use a Mutex in this case because a mutex only allows a single thread control—whether reading or writing—not distinguishing between read-only and write operations. This would unnecessarily block concurrent readers, reducing performance when reads far outnumber writes.
+
+2. **why did not Rust allow mutable static variables**
+    Rust does not allow mutable static variables by default—unlike Java, where static variables can be mutated easily—because of its strong emphasis on safety and concurrency. Mutable globals can lead to data races and undefined behavior if accessed unsafely. With Rust, we use the lazy_static crate (or similar patterns) to declare globals. This approach forces us to explicitly handle the synchronization aspect (using types like RwLock),
 
 #### Reflection Subscriber-2
